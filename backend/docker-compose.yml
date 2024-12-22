@@ -14,6 +14,19 @@ services:
     networks:
       - app-network
 
+  db_test:
+    image: postgres:latest
+    ports:
+      - "5452:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: test
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
 volumes:
   db_data:
 

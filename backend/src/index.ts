@@ -4,6 +4,7 @@ import multer from "multer";
 import knex from "knex";
 import cors from "cors";
 import { parse } from "csv-parse";
+import config from "../knexfile";
 
 const app = express();
 app.use(
@@ -18,16 +19,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Initialize Knex
-const db = knex({
-  client: "pg",
-  connection: {
-    host: process.env.DB_HOST || "localhost",
-    port: Number(process.env.DB_PORT) || 5442,
-    user: process.env.DB_USER || "user",
-    password: process.env.DB_PASSWORD || "password",
-    database: process.env.DB_NAME || "posts",
-  },
-});
+const db = knex(config[process.env.NODE_ENV || "development"]);
 
 app.post(
   "/api/upload",
@@ -110,3 +102,5 @@ app.get("/api/posts", async (req: Request, res: Response) => {
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+export default app;
