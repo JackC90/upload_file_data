@@ -58,7 +58,7 @@ const FileUpload = ({
             </label>
             {!file && <p className="pl-1">or drag and drop</p>}
           </div>
-          <p className="text-xs/5 text-gray-600">CSV to 10MB</p>
+          <p className="text-xs/5 text-gray-600">CSV to 50MB</p>
         </div>
       </div>
     </div>

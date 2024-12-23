@@ -1,7 +1,7 @@
 import React from "react";
 
 export interface PaginationProps extends React.HTMLAttributes<HTMLDivElement> {
-  selectedPage?: number;
+  initialCurrentPage?: number;
   itemsPerPage?: number;
   total?: number;
   onChangePage?: Function;

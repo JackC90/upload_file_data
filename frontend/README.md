@@ -1,50 +1,57 @@
-# React + TypeScript + Vite
+# README for Running a Vite App with React
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Introduction
 
-Currently, two official plugins are available:
+This guide provides step-by-step instructions on how to set up and run a React application using Vite, a modern build tool that offers fast development and optimized builds.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Prerequisites
 
-## Expanding the ESLint configuration
+- **Node.js**: Ensure you have Node.js installed on your system. You can download it from the [official Node.js website](https://nodejs.org/).
+- **Terminal**: Basic knowledge of using the terminal.
+- **Code Editor**: A code editor like Visual Studio Code is recommended.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Setup Instructions
 
-- Configure the top-level `parserOptions` property like this:
+### 1. Go into frontend directory
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+Run the command to enter the `/frontend` directory from your project root directory.
+
+```
+cd frontend
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### 2. Install Dependencies
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+Run the following command to install the necessary dependencies for your project:
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
 ```
+npm install
+```
+
+### 3. Create a .env File
+
+Before starting the development server, create a `.env` file in the frontend directory. This file will hold environment variables for your application.
+
+A sample `.env` is provided, and you may use that.
+
+Otherwise, you can create this file manually or by using the following command:
+
+```
+touch .env
+```
+
+In the `.env` file, define your environment variables prefixed with `VITE_`:
+
+```
+VITE_API_URL=http://localhost:8061
+```
+
+### 4. Start the Development Server
+
+To start your application and view it in the browser, run:
+
+```
+npm run dev
+```
+
+You will see an output indicating that your app is running, at `http://localhost:3021` by default. Open this URL in your web browser to view your application.

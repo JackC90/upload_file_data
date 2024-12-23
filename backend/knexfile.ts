@@ -41,9 +41,6 @@ const config: { [key: string]: Knex.Config } = {
       password: "password",
       database: "test",
     },
-    migrations: {
-      tableName: "knex_migrations",
-    },
     useNullAsDefault: true,
   },
 };

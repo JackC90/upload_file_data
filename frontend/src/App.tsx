@@ -159,8 +159,7 @@ function App() {
               />
 
               <Pagination
-                key={offset / pageSize + 1}
-                selectedPage={offset / pageSize + 1}
+                initialCurrentPage={offset / pageSize + 1}
                 total={Number(dataPosts.data.total)}
                 itemsPerPage={pageSize}
                 onChangePage={onChangePage}

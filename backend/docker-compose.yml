@@ -22,8 +22,6 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: test
-    volumes:
-      - db_data:/var/lib/postgresql/data
     networks:
       - app-network
 

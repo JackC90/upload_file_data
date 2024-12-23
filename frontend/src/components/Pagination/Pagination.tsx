@@ -1,5 +1,5 @@
 import { PaginationProps } from "@/types/pagination";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const getPageArray = (
   totalPages: number,
@@ -17,12 +17,12 @@ const getPageArray = (
 };
 
 const Pagination = ({
-  selectedPage = 1,
+  initialCurrentPage = 1,
   itemsPerPage = 10,
   total = 0,
   onChangePage,
 }: PaginationProps) => {
-  const [currentPage, setCurrentPage] = useState<number>(selectedPage);
+  const [currentPage, setCurrentPage] = useState<number>(initialCurrentPage);
 
   const totalPages = Math.ceil(total / itemsPerPage);
 
@@ -39,6 +39,10 @@ const Pagination = ({
       });
     }
   };
+
+  useEffect(() => {
+    handlePageChange(initialCurrentPage);
+  }, [initialCurrentPage]);
 
   const offset = (currentPage - 1) * itemsPerPage;
   const pageList = getPageArray(totalPages, currentPage);

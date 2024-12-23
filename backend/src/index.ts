@@ -5,6 +5,7 @@ import knex from "knex";
 import cors from "cors";
 import { parse } from "csv-parse";
 import config from "../knexfile";
+import { query, validationResult } from "express-validator";
 
 const app = express();
 app.use(
@@ -16,7 +17,11 @@ const PORT = process.env.PORT || 8061;
 
 // Set up multer for file uploads
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const maxFileMb: number = 50;
+const upload = multer({
+  storage,
+  limits: { fileSize: maxFileMb * 1024 * 1024 },
+});
 
 // Initialize Knex
 const db = knex(config[process.env.NODE_ENV || "development"]);
@@ -36,7 +41,9 @@ app.post(
       { columns: true, trim: true },
       async (err, data) => {
         if (err) {
-          return res.status(500).json({ error: "Error parsing CSV file." });
+          return res.status(500).json({
+            error: `Error parsing file. Please upload a valid CSV up to ${maxFileMb}MB.`,
+          });
         }
 
         // Prepare data for insertion
@@ -62,45 +69,61 @@ app.post(
   },
 );
 
-app.get("/api/posts", async (req: Request, res: Response) => {
-  const limit = Math.min(parseInt(req.query.limit as string) || 10, 20);
-  const offset = parseInt(req.query.offset as string) || 0;
-  const search = req.query.search;
+const validateQueryParams = [
+  query("limit").optional().isInt({ min: 1, max: 20 }).toInt(),
+  query("offset").optional().isInt({ min: 0 }).toInt(),
+  query("search").optional().isString().trim(),
+];
 
-  try {
-    let query = db("posts").select("*").limit(limit).offset(offset);
-    const countQuery = db("posts").count("* as count");
-
-    if (search) {
-      query = query.where(function () {
-        this.where("name", "ilike", `%${search}%`)
-          .orWhere("email", "ilike", `%${search}%`)
-          .orWhere("body", "ilike", `%${search}%`);
-      });
-      countQuery.where(function () {
-        this.where("name", "ilike", `%${search}%`)
-          .orWhere("email", "ilike", `%${search}%`)
-          .orWhere("body", "ilike", `%${search}%`);
-      });
+app.get(
+  "/api/posts",
+  validateQueryParams,
+  async (req: Request, res: Response): Promise<any> => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: "Invalid query parameters." });
     }
 
-    const [posts, total] = await Promise.all([query, countQuery]);
+    const { limit = 10, offset = 0, search } = req.query;
 
-    res.status(200).json({
-      posts,
-      total: total[0].count,
-      limit,
-      offset,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to fetch posts" });
-  }
-});
+    try {
+      let query = db("posts")
+        .select("*")
+        .limit(Number(limit))
+        .offset(Number(offset));
+      const countQuery = db("posts").count("* as count");
+
+      if (search) {
+        query = query.where(function () {
+          this.where("name", "ilike", `%${search}%`)
+            .orWhere("email", "ilike", `%${search}%`)
+            .orWhere("body", "ilike", `%${search}%`);
+        });
+        countQuery.where(function () {
+          this.where("name", "ilike", `%${search}%`)
+            .orWhere("email", "ilike", `%${search}%`)
+            .orWhere("body", "ilike", `%${search}%`);
+        });
+      }
+
+      const [posts, total] = await Promise.all([query, countQuery]);
+
+      res.status(200).json({
+        posts,
+        total: total[0].count,
+        limit,
+        offset,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to fetch posts" });
+    }
+  },
+);
 
 // Start the server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-export default app;
+export { app, server };
